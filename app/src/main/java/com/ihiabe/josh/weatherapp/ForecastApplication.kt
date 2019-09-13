@@ -1,7 +1,9 @@
 package com.ihiabe.josh.weatherapp
 
 import android.app.Application
+import android.content.Context
 import androidx.preference.PreferenceManager
+import com.google.android.gms.location.LocationServices
 import com.ihiabe.josh.weatherapp.data.db.ForecastDatabase
 import com.ihiabe.josh.weatherapp.data.network.*
 import com.ihiabe.josh.weatherapp.data.provider.LocationProvider
@@ -30,7 +32,8 @@ class ForecastApplication: Application(), KodeinAware {
         bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
         bind() from singleton { ApixuWeatherApiService(instance()) }
         bind<WeatherNetworkDataSource>() with singleton { WeatherNetworkDataSourceImpl(instance()) }
-        bind<LocationProvider>() with singleton { LocationProviderImpl() }
+        bind() from provider { LocationServices.getFusedLocationProviderClient(instance<Context>()) }
+        bind<LocationProvider>() with singleton { LocationProviderImpl(instance(),instance()) }
         bind<ForecastRepository>() with singleton { ForecastRepositoryImpl(instance(),instance(),instance(),instance()) }
         bind<UnitProvider>() with singleton { UnitProviderImpl(instance()) }
         bind() from provider { CurrentWeatherViewModelFactory(instance(),instance()) }
